@@ -1,12 +1,13 @@
 from keras.models import Model
 from keras.layers import Input, Dense, Reshape, concatenate
-from keras.layers.core import Activation
+from keras.layers.core import Activation, Flatten
 from keras.layers.normalization import BatchNormalization
-from keras.layers.convolutional import UpSampling2D, Conv2D
+from keras.layers.convolutional import UpSampling2D, Conv2D, MaxPooling2D
 from keras import backend as K
+from keras.optimizers import SGD
 import os
 
-from glove_loader import GloveModel
+from .glove_loader import GloveModel
 
 class DCGan(object):
     model_name = 'dc-gan'
@@ -63,3 +64,40 @@ class DCGan(object):
         self.generator.compile(loss='mean_squared_error', optimizer='SGD')
 
         print('generator:', self.generator.summary())
+
+        text_input2 = Input(shape=(self.text_input_dim,))
+        text_layer2 = Dense(1024)(text_input2)
+
+        img_input2 = Input(shape=(self.img_width, self.img_height, self.img_channels))
+        img_layer2 = Conv2D(64, kernel_size=(5, 5), padding='same')(
+            img_input2)
+        img_layer2 = Activation('tanh')(img_layer2)
+        img_layer2 = MaxPooling2D(pool_size=(2, 2))(img_layer2)
+        img_layer2 = Conv2D(128, kernel_size=5)(img_layer2)
+        img_layer2 = Activation('tanh')(img_layer2)
+        img_layer2 = MaxPooling2D(pool_size=(2, 2))(img_layer2)
+        img_layer2 = Flatten()(img_layer2)
+        img_layer2 = Dense(1024)(img_layer2)
+
+        merged = concatenate([img_layer2, text_layer2])
+
+        discriminator_layer = Activation('tanh')(merged)
+        discriminator_layer = Dense(1)(discriminator_layer)
+        discriminator_output = Activation('sigmoid')(discriminator_layer)
+
+        self.discriminator = Model([img_input2, text_input2], discriminator_output)
+
+        d_optim = SGD(lr=0.0005, momentum=0.9, nesterov=True)
+        self.discriminator.compile(loss='binary_crossentropy', optimizer=d_optim)
+
+        print('discriminator: ', self.discriminator.summary())
+
+        model_output = self.discriminator([self.generator.output, text_input1])
+
+        self.model = Model([random_input, text_input1], model_output)
+        self.discriminator.trainable = False
+
+        g_optim = SGD(lr=0.0005, momentum=0.9, nesterov=True)
+        self.model.compile(loss='binary_crossentropy', optimizer=g_optim)
+
+        print('generator-discriminator: ', self.model.summary())
