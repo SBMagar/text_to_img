@@ -20,8 +20,8 @@ def main():
     img_height = 32
     img_channels = 3
 
-    from dcgan import DCGan
-    from img_cap_loader import load_normalized_img_and_its_text
+    from .dcgan import DCGan
+    from .img_cap_loader import load_normalized_img_and_its_text
 
     image_label_pairs = load_normalized_img_and_its_text(img_dir_path, txt_dir_path, img_width=img_width, img_height=img_height)
 

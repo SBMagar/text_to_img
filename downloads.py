@@ -104,7 +104,7 @@ def unzip(src_dir,new_name = None):
 
 def main():
 	url = "http://www.robots.ox.ac.uk/~vgg/data/flowers/102/102flowers.tgz"
-	cur_dir = os.getcwd()
+	cur_dir = os.path.join(os.getcwd(), "data")
 	image_dir = os.path.join(cur_dir,"102flowers.tgz")
 	if os.path.exists(image_dir):
 		print('dataset already exists')
