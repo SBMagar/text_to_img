@@ -1,5 +1,5 @@
 from __future__ import print_function
-import os,sys,gzip,requests,zipfile,tarfile
+import os, sys, gzip, requests, zipfile, zarfile
 from tqdm import tqdm
 from six.moves import urllib
 import time
