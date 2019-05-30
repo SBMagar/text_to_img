@@ -10,7 +10,7 @@ import os
 import numpy as np
 from PIL import Image
 
-from .glove_loader import GloveModel
+from glove_loader import GloveModel
 
 class DCGan(object):
     model_name = 'dc-gan'
