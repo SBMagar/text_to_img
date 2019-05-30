@@ -3,7 +3,7 @@ from keras.layers import Input, Dense, Reshape, concatenate
 from keras.layers.core import Activation, Flatten
 from keras.layers.normalization import BatchNormalization
 from keras.layers.convolutional import UpSampling2D, Conv2D, MaxPooling2D
-from keras_text_to_image.library.utility.image_utils import combine_normalized_images, img_from_normalized_img
+from .image_utils import combine_normalized_images, img_from_normalized_img
 from keras import backend as K
 from keras.optimizers import SGD
 import os
